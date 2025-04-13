@@ -4,8 +4,11 @@ import SearchQuery from "#models/search_query";
 import { searchQueryValidator } from "#validators/search_query";
 
 export default class SearchQueriesController {
-  async index({ response }: HttpContext) {
-    const queries = await SearchQuery.all();
+  async index({ request, response }: HttpContext) {
+    const page = request.input("page", 1);
+    const perPage = request.input("perPage", 10);
+
+    const queries = await SearchQuery.query().paginate(page, perPage);
 
     return response.json(queries);
   }
