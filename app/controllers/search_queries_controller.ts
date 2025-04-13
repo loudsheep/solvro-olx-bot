@@ -5,8 +5,8 @@ import { searchQueryValidator } from "#validators/search_query";
 
 export default class SearchQueriesController {
   async index({ request, response }: HttpContext) {
-    const page = request.input("page", 1);
-    const perPage = request.input("perPage", 10);
+    const page = Number(request.input("page", 1)) || 1;
+    const perPage = Number(request.input("perPage", 10)) || 10;
 
     const queries = await SearchQuery.query().paginate(page, perPage);
 
@@ -14,9 +14,9 @@ export default class SearchQueriesController {
   }
 
   async store({ request, response }: HttpContext) {
-    let data = await request.validateUsing(searchQueryValidator);
+    const data = await request.validateUsing(searchQueryValidator);
 
-    let newSearchQuery = await SearchQuery.create(data);
+    const newSearchQuery = await SearchQuery.create(data);
 
     return response.created(newSearchQuery);
   }
@@ -24,7 +24,7 @@ export default class SearchQueriesController {
   async show({ params, response }: HttpContext) {
     const searchQuery = await SearchQuery.find(params.id);
 
-    if (searchQuery == null) {
+    if (searchQuery === null) {
       return response.status(404).json({ message: "Not found" });
     }
 
