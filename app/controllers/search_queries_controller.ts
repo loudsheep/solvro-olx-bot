@@ -1,13 +1,30 @@
-import SearchQuery from '#models/search_query';
-import { searchQueryValidator } from '#validators/search_query';
-import type { HttpContext } from '@adonisjs/core/http'
+import type { HttpContext } from "@adonisjs/core/http";
+
+import SearchQuery from "#models/search_query";
+import { searchQueryValidator } from "#validators/search_query";
 
 export default class SearchQueriesController {
-    async store({ request, response }: HttpContext) {
-        let data = await request.validateUsing(searchQueryValidator);
+  async index({ response }: HttpContext) {
+    const queries = await SearchQuery.all();
 
-        let newSearchQuery = await SearchQuery.create(data);
+    return response.json(queries);
+  }
 
-        return response.created(newSearchQuery);
+  async store({ request, response }: HttpContext) {
+    let data = await request.validateUsing(searchQueryValidator);
+
+    let newSearchQuery = await SearchQuery.create(data);
+
+    return response.created(newSearchQuery);
+  }
+
+  async show({ params, response }: HttpContext) {
+    const searchQuery = await SearchQuery.find(params.id);
+
+    if (searchQuery == null) {
+      return response.status(404).json({ message: "Not found" });
     }
+
+    return response.json(searchQuery);
+  }
 }
