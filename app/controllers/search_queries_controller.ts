@@ -39,4 +39,12 @@ export default class SearchQueriesController {
 
     return response.ok(searchQuery);
   }
+
+  async destroy({ params, response }: HttpContext) {
+    const searchQuery = await SearchQuery.findOrFail(params.id);
+
+    await searchQuery.delete();
+
+    return response.noContent();
+  }
 }
