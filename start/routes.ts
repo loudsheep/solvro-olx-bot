@@ -13,8 +13,4 @@ const SearchQueriesController = () =>
 
 router.where("id", router.matchers.number());
 
-router.get("/api/v1/search-queries", [SearchQueriesController, "index"]);
-router.post("/api/v1/search-queries", [SearchQueriesController, "store"]);
-router
-  .get("/api/v1/search-queries/:id", [SearchQueriesController, "show"])
-  .where("id", router.matchers.number());
+router.resource("/api/v1/search-queries", SearchQueriesController);

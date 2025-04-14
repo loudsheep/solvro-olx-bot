@@ -1,7 +1,10 @@
 import type { HttpContext } from "@adonisjs/core/http";
 
 import SearchQuery from "#models/search_query";
-import { searchQueryValidator } from "#validators/search_query";
+import {
+  createSearchQueryValidator,
+  updateSearchQueryValidator,
+} from "#validators/search_query";
 
 export default class SearchQueriesController {
   async index({ request, response }: HttpContext) {
@@ -14,7 +17,7 @@ export default class SearchQueriesController {
   }
 
   async store({ request, response }: HttpContext) {
-    const data = await request.validateUsing(searchQueryValidator);
+    const data = await request.validateUsing(createSearchQueryValidator);
 
     const newSearchQuery = await SearchQuery.create(data);
 
@@ -22,12 +25,18 @@ export default class SearchQueriesController {
   }
 
   async show({ params, response }: HttpContext) {
-    const searchQuery = await SearchQuery.find(params.id);
-
-    if (searchQuery === null) {
-      return response.status(404).json({ message: "Not found" });
-    }
+    const searchQuery = await SearchQuery.findOrFail(params.id);
 
     return response.json(searchQuery);
+  }
+
+  async update({ request, response, params }: HttpContext) {
+    const data = await request.validateUsing(updateSearchQueryValidator);
+
+    const searchQuery = await SearchQuery.findOrFail(params.id);
+
+    await searchQuery.merge(data).save();
+
+    return response.ok(searchQuery);
   }
 }
