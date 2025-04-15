@@ -18,6 +18,9 @@ export default class SearchQuery extends BaseModel {
   @column()
   declare locationId: number;
 
+  @column.dateTime()
+  declare refreshedAt: DateTime;
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;
 
